@@ -24,9 +24,13 @@ venue:
 
 author:
  -
+    fullname: "Jonathan Hoyland"
+    email: "jonathan.hoyland@gmail.com"
+
+ -
     fullname: "Christopher Patton"
-    organization: Your Organization Here
-    email: "cpatton@cloudflare.com"
+    organization: "Cloudflare"
+    email: "chrispatton+ietf@gmail.com"
 
 normative:
 
