@@ -40,30 +40,81 @@ informative:
 
 --- abstract
 
-TODO Abstract
-
+A derived component is specified for HTTP Message Signatures that binds the
+signature to the underlying secure channel (TLS over TCP or QUIC), thereby
+ensuring a signed message transmitted over one channel cannot be retransmitted
+over another. The component consists of key material exported from TLS.
 
 --- middle
 
 # Introduction
 
-TODO Introduction
+HTTP Message Signatures {{!RFC9421}} allow various components of an HTTP
+message to the authenticated by the sender either using a digital signature or
+a message authentication code (MAC). The exact set of components to be signed
+may very depending upon the application:
 
+1. the components that need to be signed depend on the security considerations
+   of the application; and
+
+1. some components of the message may not available at the time of signing or
+   verification.
+
+To accommodate these limitations, {{!RFC9421}} defines a number of common
+components and specifies rules for transforming components into the input to
+the signature algorithm or MAC. The value of most components are extracted
+directly from the bytes of the HTTP message; others are derived from the
+message through a well-specified process.
+
+All components are derived from the HTTP messages themselves. Consequentially,
+an on-path attacker with access to the HTTP messages transmitted between the
+client and server can replay a signed message at will.
+
+The `nonce` parameter provides some defense against this, but this mechanism is
+not applicable in all deployment scenarios. For example, it is common for two
+TLS servers to be authoritative for the same DNS name. (This setup is commonly
+referred to as "multi-CDN".) In this scenario, the first server can intercept a
+signed request from a client, then replay that request to the second server,
+thereby impersonating the client.
+
+This goal of this document is to make replay protection more robust. A new
+derived component is defined for HTTP Message Signatures whose value is set to
+key material exported from TLS as defined in {{Section 7.5 of !RFC8446}}. This
+binds the signed message to the underlying TLS channel, thereby ensuring the
+signature is never accepted outside of that channel.
 
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
 
+# The `@ekm` Derived Component
+
+A new derived component is defined with the name `@ekm`.
+
+TODO
+
+* Basically
+  <https://github.com/rustls/rustls/blob/08cde8c57b1146752e188663de351ff2b2a69b67/rustls/src/tls13/key_schedule.rs#L858>.
+  We should just need to define the label and context strings.
+
+* MUST negotiate TLS 1.3 {{!RFC8446}}. We can probably do TLS 1.2 as well,
+  but let's not bother right now.
+
+* Warn users about when this mechanism can't be used. The signer and verifier
+  have to share a TLS connection between them, or proxy the exported key
+  material by some other means. We should probably to discourage this.
 
 # Security Considerations
 
-TODO Security
+TODO
 
+* Define a channel binding and say why it prevents replays between CDNs.
 
 # IANA Considerations
 
-This document has no IANA actions.
+TODO
 
+* Update the "HTTP Signature Derived Component Names" registry.
 
 --- back
 
