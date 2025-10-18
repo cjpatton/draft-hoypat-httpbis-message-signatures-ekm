@@ -83,6 +83,8 @@ key material exported from TLS as defined in {{Section 7.5 of !RFC8446}}. This
 binds the signed message to the underlying TLS channel, thereby ensuring the
 signature is never accepted outside of that channel.
 
+TODO Talk about WBA?
+
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
