@@ -93,6 +93,17 @@ TODO Talk about WBA?
 
 A new derived component is defined with the name `@ekm`.
 
+The contents of this component are the output of a call to the exporter
+interface of the underlying TLS connection encoded in base64. The label
+parameter of the exporter function is set to "http-sig-ekm" and the context
+value is empty. [[ Should we account for QUIC here?]]
+
+If the `@ekm` component is present, but its value does not verify the signature
+should be rejected. It is possible to architect a system such that the verifier
+does not directly call the exporter interface, but is simply provided its output
+on a trusted channel. This behaviour works, but requires the verifier and caller
+to trust each other.
+
 TODO
 
 * Basically
