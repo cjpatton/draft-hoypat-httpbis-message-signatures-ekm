@@ -85,6 +85,9 @@ key material exported from TLS as defined in {{Section 7.5 of !RFC8446}}. This
 binds the signed message to the underlying TLS channel, thereby ensuring the
 signature is never accepted outside of that channel.
 
+> OPEN ISSUE Would it be better do define exported key material as a signature
+> parameter instead of as a derived component?
+
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
