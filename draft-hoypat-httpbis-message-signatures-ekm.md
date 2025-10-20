@@ -60,15 +60,16 @@ may very depending upon the application:
 1. some components of the message may not available at the time of signing or
    verification.
 
-To accommodate these limitations, HTTP Message Signature defines a number of
-common components and specifies rules for transforming components into the
-input to the signature algorithm. The value of most components are extracted
+To accommodate these limitations, HTTP Message Signatures defines a number of
+HTTP Message Components ({{Section 2 of RFC 9421}}) and specifies rules for transforming components into the
+input to the signature algorithm ({{Section 3.1 of RFC9421}}). The value of most components are extracted
 directly from the bytes of the HTTP message; others are derived from the
 message through a well-specified process.
 
 All components are derived from the HTTP messages themselves. Consequentially,
 an on-path attacker with access to the HTTP messages transmitted between the
 client and server can replay a signed message at will.
+This is described in {{Sectoin 7.2.2 of RFC9421}}.
 
 The `nonce` parameter provides some defense against replay attacks, but this
 mechanism is not applicable in all deployment scenarios. For example, it is
