@@ -121,6 +121,9 @@ Table of Contents
    underlying TLS channel, thereby ensuring the signature is never
    accepted outside of that channel.
 
+      OPEN ISSUE Would it be better do define exported key material as a
+      signature parameter instead of as a derived component?
+
 2.  Conventions and Definitions
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
