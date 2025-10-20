@@ -60,9 +60,9 @@ may very depending upon the application:
 1. some components of the message may not available at the time of signing or
    verification.
 
-To accommodate these limitations, {{!RFC9421}} defines a number of common
-components and specifies rules for transforming components into the input to
-the signature algorithm or MAC. The value of most components are extracted
+To accommodate these limitations, HTTP Message Signature defines a number of
+common components and specifies rules for transforming components into the
+input to the signature algorithm. The value of most components are extracted
 directly from the bytes of the HTTP message; others are derived from the
 message through a well-specified process.
 
@@ -70,20 +70,18 @@ All components are derived from the HTTP messages themselves. Consequentially,
 an on-path attacker with access to the HTTP messages transmitted between the
 client and server can replay a signed message at will.
 
-The `nonce` parameter provides some defense against this, but this mechanism is
-not applicable in all deployment scenarios. For example, it is common for two
-TLS servers to be authoritative for the same DNS name. (This setup is commonly
-referred to as "multi-CDN".) In this scenario, the first server can intercept a
-signed request from a client, then replay that request to the second server,
-thereby impersonating the client.
+The `nonce` parameter provides some defense against replay attacks, but this
+mechanism is not applicable in all deployment scenarios. For example, it is
+common for two TLS servers to be authoritative for the same DNS name. (This
+setup is commonly referred to as "multi-CDN".) In this scenario, the first
+server can intercept a signed request from a client, then replay that request
+to the second server, thereby impersonating the client.
 
-This goal of this document is to make replay protection more robust. A new
+The goal of this document is to make replay protection more robust. A new
 derived component is defined for HTTP Message Signatures whose value is set to
 key material exported from TLS as defined in {{Section 7.5 of !RFC8446}}. This
 binds the signed message to the underlying TLS channel, thereby ensuring the
 signature is never accepted outside of that channel.
-
-TODO Talk about WBA?
 
 # Conventions and Definitions
 
@@ -94,41 +92,35 @@ TODO Talk about WBA?
 A new derived component is defined with the name `@ekm`.
 
 The contents of this component are the output of a call to the exporter
-interface of the underlying TLS connection, {{!RFC8446}}, encoded in base64
-{{!RFC4648}}. The label parameter of the exporter function is set to
-"http-sig-ekm" and the context value is the version of TLS, which MUST be at
-least TLS 1.3, i.e. 0x0304.
+interface of the underlying TLS connection as defined in {{Section 7.5 of
+!RFC8446}}, encoded in base64 {{!RFC4648}}. The label parameter of the exporter
+function is set to "http-sig-ekm" and the context value is the version of TLS.
+For TLS 1.3 (i.e., {{!RFC8446}}) its value is `0x0304`.
 
-If the `@ekm` component is present, but its value does not verify, the signature
-should be rejected. It is possible to architect a system such that the verifier
-does not directly call the exporter interface, but is simply provided its output
-on a trusted channel. This behaviour works, but requires the verifier and caller
-to trust each other.
+TLS 1.3 or later is REQUIRED. This derived component is not compatible with
+HTTP messages sent in plaintext or over TLS 1.2 and below.
 
-TODO
+> NOTE We could in principal specify this for TLS 1.2, if we need to.
 
-* Basically
-  <https://github.com/rustls/rustls/blob/08cde8c57b1146752e188663de351ff2b2a69b67/rustls/src/tls13/key_schedule.rs#L858>.
-  We should just need to define the label and context strings.
+If the signer and verifier do not agree on the value of `@ekm`, then the
+signature will not verify. If the signer and verifier share a TLS connection
+between them, then they will compute the same value. If they do not share a
+direct TLS connection, it is possible to architect a system such that the
+verifier does not directly call the exporter interface, but is simply provided
+its output on a trusted channel. This behaviour works, but requires the
+verifier and caller to trust each other.
 
-* MUST negotiate TLS 1.3 {{!RFC8446}}. We can probably do TLS 1.2 as well,
-  but let's not bother right now.
-
-* Warn users about when this mechanism can't be used. The signer and verifier
-  have to share a TLS connection between them, or proxy the exported key
-  material by some other means. We should probably to discourage this.
+> OPEN ISSUE How do we negotiate usage of `@ekm`? Both the signer and verifier
+> need to support the new derived component into generate message signatures
+> that use it, but the signer might not know if the verifier uses it.
 
 # Security Considerations
 
-TODO
-
-* Define a channel binding and say why it prevents replays between CDNs.
+> TODO Define a channel binding and say why it prevents replays between CDNs.
 
 # IANA Considerations
 
-TODO
-
-* Update the "HTTP Signature Derived Component Names" registry.
+> TODO Update the "HTTP Signature Derived Component Names" registry.
 
 --- back
 
