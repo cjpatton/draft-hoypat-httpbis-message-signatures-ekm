@@ -1202,14 +1202,15 @@ of the application; and<a href="#section-1-2.1.1" class="pilcrow">¶</a></p>
 verification.<a href="#section-1-2.2.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
-<p id="section-1-3">To accommodate these limitations, HTTP Message Signature defines a number of
-common components and specifies rules for transforming components into the
-input to the signature algorithm. The value of most components are extracted
-directly from the bytes of the HTTP message; others are derived from the
-message through a well-specified process.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-3">To accommodate these limitations, HTTP Message Signatures defines a number of
+HTTP Message Components (<span><a href="https://rfc-editor.org/rfc/rfc9421#section-2" class="relref">Section 2</a> of [<a href="#RFC9421" class="cite xref">RFC9421</a>]</span>) and specifies rules for
+transforming components into the input to the signature algorithm (<span><a href="https://rfc-editor.org/rfc/rfc9421#section-3.1" class="relref">Section 3.1</a> of [<a href="#RFC9421" class="cite xref">RFC9421</a>]</span>). The value of most components are extracted directly from
+the bytes of the HTTP message; others are derived from the message through a
+well-specified process.<a href="#section-1-3" class="pilcrow">¶</a></p>
 <p id="section-1-4">All components are derived from the HTTP messages themselves. Consequentially,
 an on-path attacker with access to the HTTP messages transmitted between the
-client and server can replay a signed message at will.<a href="#section-1-4" class="pilcrow">¶</a></p>
+client and server can replay a signed message at will. This is described in
+<span><a href="https://rfc-editor.org/rfc/rfc9421#section-7.2.2" class="relref">Section 7.2.2</a> of [<a href="#RFC9421" class="cite xref">RFC9421</a>]</span>.<a href="#section-1-4" class="pilcrow">¶</a></p>
 <p id="section-1-5">The <code>nonce</code> parameter provides some defense against replay attacks, but this
 mechanism is not applicable in all deployment scenarios. For example, it is
 common for two TLS servers to be authoritative for the same DNS name. (This
