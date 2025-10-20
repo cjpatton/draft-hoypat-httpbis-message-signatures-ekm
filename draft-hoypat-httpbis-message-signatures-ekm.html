@@ -13,24 +13,23 @@ signature to the underlying secure channel (TLS over TCP or QUIC), thereby
 ensuring a signed message transmitted over one channel cannot be retransmitted
 over another. The component consists of key material exported from TLS. 
     " name="description">
-<meta content="xml2rfc 3.30.2" name="generator">
+<meta content="xml2rfc 3.31.0" name="generator">
 <meta content="next generation" name="keyword">
 <meta content="unicorn" name="keyword">
 <meta content="sparkling distributed ledger" name="keyword">
 <meta content="draft-hoypat-httpbis-message-signatures-ekm-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.30.2
-    Python 3.12.11
+  xml2rfc 3.31.0
+    Python 3.12.12
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.6
     lxml 5.3.1
-    platformdirs 4.4.0
+    platformdirs 4.5.0
     pycountry 24.6.1
     PyYAML 6.0.2
     requests 2.32.5
-    setuptools 80.9.0
     wcwidth 0.2.14
 -->
 <link href="draft-hoypat-httpbis-message-signatures-ekm.xml" rel="alternate" type="application/rfc+xml">
@@ -1054,7 +1053,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Hoyland &amp; Patton</td>
-<td class="center">Expires 21 April 2026</td>
+<td class="center">Expires 23 April 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1067,12 +1066,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-hoypat-httpbis-message-signatures-ekm-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-10-18" class="published">18 October 2025</time>
+<time datetime="2025-10-20" class="published">20 October 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-04-21">21 April 2026</time></dd>
+<dd class="expires"><time datetime="2026-04-23">23 April 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1127,7 +1126,7 @@ over another. The component consists of key material exported from TLS.<a href="
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 21 April 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 23 April 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1242,21 +1241,31 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-the-ekm-derived-component" class="section-name selfRef">The <code>@ekm</code> Derived Component</a>
       </h2>
 <p id="section-3-1">A new derived component is defined with the name <code>@ekm</code>.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">TODO<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-2">The contents of this component are the output of a call to the exporter
+interface of the underlying TLS connection, <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>, encoded in base64
+<span>[<a href="#RFC4648" class="cite xref">RFC4648</a>]</span>. The label parameter of the exporter function is set to
+"http-sig-ekm" and the context value is the version of TLS, which <span class="bcp14">MUST</span> be at
+least TLS 1.3, i.e. 0x0304.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">If the <code>@ekm</code> component is present, but its value does not verify, the signature
+should be rejected. It is possible to architect a system such that the verifier
+does not directly call the exporter interface, but is simply provided its output
+on a trusted channel. This behaviour works, but requires the verifier and caller
+to trust each other.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-4">TODO<a href="#section-3-4" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3-3.1">
-          <p id="section-3-3.1.1">Basically
+<li class="normal" id="section-3-5.1">
+          <p id="section-3-5.1.1">Basically
 <a href="https://github.com/rustls/rustls/blob/08cde8c57b1146752e188663de351ff2b2a69b67/rustls/src/tls13/key_schedule.rs#L858">https://github.com/rustls/rustls/blob/08cde8c57b1146752e188663de351ff2b2a69b67/rustls/src/tls13/key_schedule.rs#L858</a>.
-We should just need to define the label and context strings.<a href="#section-3-3.1.1" class="pilcrow">¶</a></p>
+We should just need to define the label and context strings.<a href="#section-3-5.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-3-3.2">
-          <p id="section-3-3.2.1"><span class="bcp14">MUST</span> negotiate TLS 1.3 <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>. We can probably do TLS 1.2 as well,
-but let's not bother right now.<a href="#section-3-3.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-3-5.2">
+          <p id="section-3-5.2.1"><span class="bcp14">MUST</span> negotiate TLS 1.3 <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>. We can probably do TLS 1.2 as well,
+but let's not bother right now.<a href="#section-3-5.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-3-3.3">
-          <p id="section-3-3.3.1">Warn users about when this mechanism can't be used. The signer and verifier
+        <li class="normal" id="section-3-5.3">
+          <p id="section-3-5.3.1">Warn users about when this mechanism can't be used. The signer and verifier
 have to share a TLS connection between them, or proxy the exported key
-material by some other means. We should probably to discourage this.<a href="#section-3-3.3.1" class="pilcrow">¶</a></p>
+material by some other means. We should probably to discourage this.<a href="#section-3-5.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -1296,6 +1305,10 @@ material by some other means. We should probably to discourage this.<a href="#se
 <dt id="RFC2119">[RFC2119]</dt>
       <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4648">[RFC4648]</dt>
+      <dd>
+<span class="refAuthor">Josefsson, S.</span>, <span class="refTitle">"The Base16, Base32, and Base64 Data Encodings"</span>, <span class="seriesInfo">RFC 4648</span>, <span class="seriesInfo">DOI 10.17487/RFC4648</span>, <time datetime="2006-10" class="refDate">October 2006</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4648">https://www.rfc-editor.org/rfc/rfc4648</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
       <dd>
