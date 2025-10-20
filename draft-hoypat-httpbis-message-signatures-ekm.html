@@ -1202,26 +1202,25 @@ of the application; and<a href="#section-1-2.1.1" class="pilcrow">¶</a></p>
 verification.<a href="#section-1-2.2.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
-<p id="section-1-3">To accommodate these limitations, <span>[<a href="#RFC9421" class="cite xref">RFC9421</a>]</span> defines a number of common
-components and specifies rules for transforming components into the input to
-the signature algorithm or MAC. The value of most components are extracted
+<p id="section-1-3">To accommodate these limitations, HTTP Message Signature defines a number of
+common components and specifies rules for transforming components into the
+input to the signature algorithm. The value of most components are extracted
 directly from the bytes of the HTTP message; others are derived from the
 message through a well-specified process.<a href="#section-1-3" class="pilcrow">¶</a></p>
 <p id="section-1-4">All components are derived from the HTTP messages themselves. Consequentially,
 an on-path attacker with access to the HTTP messages transmitted between the
 client and server can replay a signed message at will.<a href="#section-1-4" class="pilcrow">¶</a></p>
-<p id="section-1-5">The <code>nonce</code> parameter provides some defense against this, but this mechanism is
-not applicable in all deployment scenarios. For example, it is common for two
-TLS servers to be authoritative for the same DNS name. (This setup is commonly
-referred to as "multi-CDN".) In this scenario, the first server can intercept a
-signed request from a client, then replay that request to the second server,
-thereby impersonating the client.<a href="#section-1-5" class="pilcrow">¶</a></p>
-<p id="section-1-6">This goal of this document is to make replay protection more robust. A new
+<p id="section-1-5">The <code>nonce</code> parameter provides some defense against replay attacks, but this
+mechanism is not applicable in all deployment scenarios. For example, it is
+common for two TLS servers to be authoritative for the same DNS name. (This
+setup is commonly referred to as "multi-CDN".) In this scenario, the first
+server can intercept a signed request from a client, then replay that request
+to the second server, thereby impersonating the client.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-6">The goal of this document is to make replay protection more robust. A new
 derived component is defined for HTTP Message Signatures whose value is set to
 key material exported from TLS as defined in <span><a href="https://rfc-editor.org/rfc/rfc8446#section-7.5" class="relref">Section 7.5</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>. This
 binds the signed message to the underlying TLS channel, thereby ensuring the
 signature is never accepted outside of that channel.<a href="#section-1-6" class="pilcrow">¶</a></p>
-<p id="section-1-7">TODO Talk about WBA?<a href="#section-1-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1242,30 +1241,28 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
       </h2>
 <p id="section-3-1">A new derived component is defined with the name <code>@ekm</code>.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <p id="section-3-2">The contents of this component are the output of a call to the exporter
-interface of the underlying TLS connection, <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>, encoded in base64
-<span>[<a href="#RFC4648" class="cite xref">RFC4648</a>]</span>. The label parameter of the exporter function is set to
-"http-sig-ekm" and the context value is the version of TLS, which <span class="bcp14">MUST</span> be at
-least TLS 1.3, i.e. 0x0304.<a href="#section-3-2" class="pilcrow">¶</a></p>
-<p id="section-3-3">If the <code>@ekm</code> component is present, but its value does not verify, the signature
-should be rejected. It is possible to architect a system such that the verifier
-does not directly call the exporter interface, but is simply provided its output
-on a trusted channel. This behaviour works, but requires the verifier and caller
-to trust each other.<a href="#section-3-3" class="pilcrow">¶</a></p>
-<p id="section-3-4">TODO<a href="#section-3-4" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-3-5.1">
-          <p id="section-3-5.1.1">Basically
-<a href="https://github.com/rustls/rustls/blob/08cde8c57b1146752e188663de351ff2b2a69b67/rustls/src/tls13/key_schedule.rs#L858">https://github.com/rustls/rustls/blob/08cde8c57b1146752e188663de351ff2b2a69b67/rustls/src/tls13/key_schedule.rs#L858</a>.
-We should just need to define the label and context strings.<a href="#section-3-5.1.1" class="pilcrow">¶</a></p>
+interface of the underlying TLS connection as defined in <span><a href="https://rfc-editor.org/rfc/rfc8446#section-7.5" class="relref">Section 7.5</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>, encoded in base64 <span>[<a href="#RFC4648" class="cite xref">RFC4648</a>]</span>. The label parameter of the exporter
+function is set to "http-sig-ekm" and the context value is the version of TLS.
+For TLS 1.3 (i.e., <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>) its value is <code>0x0304</code>.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">TLS 1.3 or later is <span class="bcp14">REQUIRED</span>. This derived component is not compatible with
+HTTP messages sent in plaintext or over TLS 1.2 and below.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-3-4.1">
+          <p id="section-3-4.1.1">NOTE We could in principal specify this for TLS 1.2, if we need to.<a href="#section-3-4.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-3-5.2">
-          <p id="section-3-5.2.1"><span class="bcp14">MUST</span> negotiate TLS 1.3 <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>. We can probably do TLS 1.2 as well,
-but let's not bother right now.<a href="#section-3-5.2.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-3-5.3">
-          <p id="section-3-5.3.1">Warn users about when this mechanism can't be used. The signer and verifier
-have to share a TLS connection between them, or proxy the exported key
-material by some other means. We should probably to discourage this.<a href="#section-3-5.3.1" class="pilcrow">¶</a></p>
+      </ul>
+<p id="section-3-5">If the signer and verifier do not agree on the value of <code>@ekm</code>, then the
+signature will not verify. If the signer and verifier share a TLS connection
+between them, then they will compute the same value. If they do not share a
+direct TLS connection, it is possible to architect a system such that the
+verifier does not directly call the exporter interface, but is simply provided
+its output on a trusted channel. This behaviour works, but requires the
+verifier and caller to trust each other.<a href="#section-3-5" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-3-6.1">
+          <p id="section-3-6.1.1">OPEN ISSUE How do we negotiate usage of <code>@ekm</code>? Both the signer and verifier
+need to support the new derived component into generate message signatures
+that use it, but the signer might not know if the verifier uses it.<a href="#section-3-6.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -1275,10 +1272,9 @@ material by some other means. We should probably to discourage this.<a href="#se
       <h2 id="name-security-considerations">
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-4-1">TODO<a href="#section-4-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-4-2.1">
-          <p id="section-4-2.1.1">Define a channel binding and say why it prevents replays between CDNs.<a href="#section-4-2.1.1" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-4-1.1">
+          <p id="section-4-1.1.1">TODO Define a channel binding and say why it prevents replays between CDNs.<a href="#section-4-1.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -1288,10 +1284,9 @@ material by some other means. We should probably to discourage this.<a href="#se
       <h2 id="name-iana-considerations">
 <a href="#section-5" class="section-number selfRef">5. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-5-1">TODO<a href="#section-5-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-5-2.1">
-          <p id="section-5-2.1.1">Update the "HTTP Signature Derived Component Names" registry.<a href="#section-5-2.1.1" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-5-1.1">
+          <p id="section-5-1.1.1">TODO Update the "HTTP Signature Derived Component Names" registry.<a href="#section-5-1.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
