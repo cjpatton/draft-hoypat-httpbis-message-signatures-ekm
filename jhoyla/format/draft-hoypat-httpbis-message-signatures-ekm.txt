@@ -5,8 +5,8 @@
 HTTP                                                          J. Hoyland
 Internet-Draft                                                          
 Intended status: Informational                                 C. Patton
-Expires: 22 April 2026                                        Cloudflare
-                                                         19 October 2025
+Expires: 23 April 2026                                        Cloudflare
+                                                         20 October 2025
 
 
             HTTP Signature Component for TLS Channel Binding
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 22 April 2026.
+   This Internet-Draft will expire on 23 April 2026.
 
 Copyright Notice
 
@@ -135,12 +135,12 @@ Table of Contents
    A new derived component is defined with the name @ekm.
 
    The contents of this component are the output of a call to the
-   exporter interface of the underlying TLS connection encoded in
-   base64.  The label parameter of the exporter function is set to
-   "http-sig-ekm" and the context value is empty. [[ Should we account
-   for QUIC here?]]
+   exporter interface of the underlying TLS connection, [RFC8446],
+   encoded in base64 [RFC4648].  The label parameter of the exporter
+   function is set to "http-sig-ekm" and the context value is the
+   version of TLS, which MUST be at least TLS 1.3, i.e. 0x0304.
 
-   If the @ekm component is present, but its value does not verify the
+   If the @ekm component is present, but its value does not verify, the
    signature should be rejected.  It is possible to architect a system
    such that the verifier does not directly call the exporter interface,
    but is simply provided its output on a trusted channel.  This
@@ -182,6 +182,10 @@ Table of Contents
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC4648]  Josefsson, S., "The Base16, Base32, and Base64 Data
+              Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
+              <https://www.rfc-editor.org/rfc/rfc4648>.
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
