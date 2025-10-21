@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-19T00:24:54.847112+00:00",
+  "timestamp": "2025-10-21T00:22:35.016839+00:00",
   "repo": "cjpatton/draft-hoypat-httpbis-message-signatures-ekm",
   "labels": [
     {
@@ -50,5 +50,170 @@
     }
   ],
   "issues": [],
-  "pulls": []
+  "pulls": [
+    {
+      "number": 1,
+      "id": "PR_kwDOQElFyc6up0h9",
+      "title": "Specify computation",
+      "url": "https://github.com/cjpatton/draft-hoypat-httpbis-message-signatures-ekm/pull/1",
+      "state": "MERGED",
+      "author": "jhoyla",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The output of the EKM needs to be in ASCII, so we should base64 encode it.\r\nI don't think we'll need a context string, although maybe we should add one for the version of TLS we're using, i.e. TLS 1.3, QUIC, some future version, etc.? It affects the output of the computation, and so, in theory, we could be vulnerable to a channel synchronisation attack where a TLS 1.3 session and a QUIC session happen to derive the same `exporter_master_secret` but to be honest if the attacker can achieve that then we have bigger problems to worry about. ",
+      "createdAt": "2025-10-20T15:15:53Z",
+      "updatedAt": "2025-10-20T16:50:59Z",
+      "baseRepository": "cjpatton/draft-hoypat-httpbis-message-signatures-ekm",
+      "baseRefName": "main",
+      "baseRefOid": "f4c90b5ed24f9e22b7a9c3166a13602cf65d758d",
+      "headRepository": "cjpatton/draft-hoypat-httpbis-message-signatures-ekm",
+      "headRefName": "jhoyla/format",
+      "headRefOid": "5af1546e40fc406b698d0d6c6a629c860c44d9ec",
+      "closedAt": "2025-10-20T16:50:59Z",
+      "mergedAt": "2025-10-20T16:50:59Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "231e48148948d43e1d6415e0238c84ef43167a07"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOQElFyc7IFj45",
+          "commit": {
+            "abbreviatedOid": "d53aee4"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-20T15:22:05Z",
+          "updatedAt": "2025-10-20T15:26:04Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "Add references for TLS and base64.",
+              "createdAt": "2025-10-20T15:22:05Z",
+              "updatedAt": "2025-10-20T15:26:04Z"
+            },
+            {
+              "originalPosition": 7,
+              "body": "I'm not too worried about confusing with QUIC. In our threat model, the server is honest and is therefore always injecting entropy that makes the EKM unique.\n\nIt might be a good idea to at least identify the TLS version in the context string. First this emphasizes that we aren't planning on backwards compatibility, and it also avoids confusing with future versions.",
+              "createdAt": "2025-10-20T15:25:05Z",
+              "updatedAt": "2025-10-20T15:26:04Z"
+            },
+            {
+              "originalPosition": 10,
+              "body": "What do you mean \"verify the signature should be rejected\"?",
+              "createdAt": "2025-10-20T15:26:00Z",
+              "updatedAt": "2025-10-20T15:26:04Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQElFyc7IFosZ",
+          "commit": {
+            "abbreviatedOid": "d53aee4"
+          },
+          "author": "jhoyla",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-20T15:27:36Z",
+          "updatedAt": "2025-10-20T15:27:36Z",
+          "comments": [
+            {
+              "originalPosition": 10,
+              "body": "Ah, I should have added a comma, \"but its value does not verify, the signature should be rejected.\"",
+              "createdAt": "2025-10-20T15:27:36Z",
+              "updatedAt": "2025-10-20T15:27:36Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQElFyc7IFrjs",
+          "commit": {
+            "abbreviatedOid": "d53aee4"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-20T15:30:37Z",
+          "updatedAt": "2025-10-20T15:30:37Z",
+          "comments": [
+            {
+              "originalPosition": 10,
+              "body": "Got it. I don't see how this sentence flows into the next. I think you need a connector sentence like \"When the message is sent between a TLS connection, both client and server can compute the EKM. In other situations, the verifier and signer may not share a direct TLS connection.\"",
+              "createdAt": "2025-10-20T15:30:37Z",
+              "updatedAt": "2025-10-20T15:30:37Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOQElFyc7IGxwB",
+          "commit": {
+            "abbreviatedOid": "5af1546"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-10-20T16:49:52Z",
+          "updatedAt": "2025-10-20T16:49:52Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "id": "PR_kwDOQElFyc6usfvs",
+      "title": "add reference to sectoin of rfc9421 and nits",
+      "url": "https://github.com/cjpatton/draft-hoypat-httpbis-message-signatures-ekm/pull/2",
+      "state": "MERGED",
+      "author": "thibmeu",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-10-20T19:20:12Z",
+      "updatedAt": "2025-10-20T19:23:32Z",
+      "baseRepository": "cjpatton/draft-hoypat-httpbis-message-signatures-ekm",
+      "baseRefName": "main",
+      "baseRefOid": "737e775635cd8861ecae43c28a5768d0a4abb6c8",
+      "headRepository": "thibmeu/draft-hoypat-httpbis-message-signatures-ekm",
+      "headRefName": "main",
+      "headRefOid": "b9c6a6936af0a98d1c154837e30f00042411ea2b",
+      "closedAt": "2025-10-20T19:23:32Z",
+      "mergedAt": "2025-10-20T19:23:32Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "1e9610001973c78f3f9cd92fdc83ba3f7a552603"
+      },
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "OWNER",
+          "body": "Will fix build issue in post.",
+          "createdAt": "2025-10-20T19:23:26Z",
+          "updatedAt": "2025-10-20T19:23:26Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOQElFyc7IIXgA",
+          "commit": {
+            "abbreviatedOid": "b9c6a69"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "Thanks :)",
+          "createdAt": "2025-10-20T19:22:06Z",
+          "updatedAt": "2025-10-20T19:22:06Z",
+          "comments": []
+        }
+      ]
+    }
+  ]
 }
